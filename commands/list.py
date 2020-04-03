@@ -32,9 +32,10 @@ def list_remote(args):
     """ lists kubectl/kustomize/helm/helmfile versions """
 
     if program == "kubectl":
+        repository = "kubernetes" if args.classic_repository else "kubectl"
         session = HTMLSession()
         kustomize_url = session.get(
-            "https://api.github.com/repos/kubernetes/kubectl/tags?per_page=1000")
+            f"https://api.github.com/repos/kubernetes/{repository}/tags?per_page=1000")
         data = kustomize_url.html.full_text
         parsed_json = (json.loads(data))
         available_versions = ['']
@@ -43,7 +44,7 @@ def list_remote(args):
             try:
                 if not version['name'].startswith('v0') and "rc" not in version['name'] and "beta" not in version[
                     'name'] and "alpha" not in version['name']:
-                    available_versions.append(version['name'].lstrip('kubernetes-'))
+                    available_versions.append(version['name'].lstrip('kubernetes-').lstrip('v'))
             except IndexError:
                 raise Exception("Github rate limiting!!")
 

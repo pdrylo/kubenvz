@@ -1,0 +1,180 @@
+name: "Finish release"
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  create-release:
+    name: "Create release"
+    runs-on: ubuntu-latest
+    steps:
+      - name: Create release
+        id: create_release
+        uses: actions/create-release@v1.0.0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, you do not need to create your own token
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ github.ref }}
+          draft: false
+          prerelease: true
+
+      - name: Save upload URL
+        shell: bash
+        run: |
+          echo "${{ steps.create_release.outputs.upload_url }}" > upload-url.txt
+
+      - name: Upload
+        uses: actions/upload-artifact@v1
+        with:
+          name: uploadurl
+          path: upload-url.txt
+
+  build-osx-release:
+    needs: create-release
+    runs-on: macos-latest
+    strategy:
+      max-parallel: 4
+      matrix:
+        python-version: [3.7]
+    steps:
+      - uses: actions/checkout@v1
+      - name: Set up python ${{ matrix.python-version }}
+        uses: actions/setup-python@v1
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+      - name: Build
+        run: |
+          make build
+      - name: Package
+        run: |
+          PLATFORM=osx_x86_64 make package
+      - name: Download upload URL
+        uses: actions/download-artifact@v1
+        with:
+          name: uploadurl
+      - name: Extract upload URL
+        shell: bash
+        run: |
+          echo "##[set-output name=upload_url;] $(cat uploadurl/upload-url.txt)"
+        id: extract_upload_url
+      - name: Get the version
+        id: get_version
+          run: echo ::set-output name=value::$(python kubenvz.py --version)
+      - name: Upload asset
+        id: upload-release-asset
+        uses: actions/upload-release-asset@v1.0.1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.extract_upload_url.outputs.upload_url }}
+          asset_path: dist/kubenvz_osx_x86_64.tar.gz
+          asset_name: kubenvz_osx_x86_64_${{ steps.get_version.outputs.value }}.tar.gz
+          asset_content_type: application/octet-stream
+
+  build-linux-release:
+    needs: create-release
+    runs-on: ubuntu-latest
+    strategy:
+      max-parallel: 4
+      matrix:
+        python-version: [3.7]
+    steps:
+      - uses: actions/checkout@v1
+      - name: Set up python ${{ matrix.python-version }}
+        uses: actions/setup-python@v1
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+      - name: Build
+        run: |
+          make build
+      - name: Package
+        run: |
+          PLATFORM=linux_x86_64 make package
+      - name: Download upload URL
+        uses: actions/download-artifact@v1
+        with:
+          name: uploadurl
+      - name: Extract Upload URL
+        shell: bash
+        run: |
+          echo "##[set-output name=upload_url;] $(cat uploadurl/upload-url.txt)"
+        id: extract_upload_url
+      - name: Get the version
+        id: get_version
+        run: echo ::set-output name=value::$(python kubenvz.py --version)
+      - name: Upload asset
+        id: upload-release-asset
+        uses: actions/upload-release-asset@v1.0.1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.extract_upload_url.outputs.upload_url }}
+          asset_path: dist/kubenvz_linux_x86_64.tar.gz
+          asset_name: kubenvz_linux_x86_64_${{ steps.get_version.outputs.value }}.tar.gz
+          asset_content_type: application/octet-stream
+
+  upload-kbnvz:
+    needs: create-release
+    runs-on: macos-latest
+    strategy:
+      max-parallel: 4
+      matrix:
+        python-version: [3.7]
+    steps:
+      - uses: actions/checkout@v1
+      - name: Download upload URL
+        uses: actions/download-artifact@v1
+        with:
+          name: uploadurl
+      - name: Extract upload URL
+        shell: bash
+        run: |
+          echo "##[set-output name=upload_url;] $(cat uploadurl/upload-url.txt)"
+        id: extract_upload_url
+      - name: Get the version
+        id: get_version
+          run: echo ::set-output name=value::$(python kubenvz.py --version)
+      - name: Upload asset
+        id: upload-release-asset
+        uses: actions/upload-release-asset@v1.0.1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.extract_upload_url.outputs.upload_url }}
+          asset_path: switchers/kbnvz.sh
+          asset_name: kbnvz_${{ steps.get_version.outputs.value }}
+          asset_content_type: application/octet-stream
+
+  finish-release:
+    name: "Finishing release"
+    needs: [build-osx-release, build-linux-release]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout current branch
+        uses: actions/checkout@v2
+        with:
+          ref: ${{ github.ref }}
+      - name: Merge to develop branch
+        uses: devmasx/merge-branch@v1.1.0
+        with:
+          type: now
+          target_branch: 'develop'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Tag current version
+        uses: peterjgrainger/action-create-branch@v2.0.0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          branch: 'tags/v${{ steps.release_bundle.outputs.version }}'

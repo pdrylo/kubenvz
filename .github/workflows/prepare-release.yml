@@ -1,14 +1,13 @@
-name: Test
+name: "Prepare release"
 
 on:
   push:
     branches:
-      - '**'
-    tags-ignore:
-      - '*.*'
+      - 'release/**'
+
 jobs:
-  test_helm:
-    runs-on: macOS-latest
+  test-helm:
+    runs-on: ubuntu-latest
     strategy:
       max-parallel: 4
       matrix:
@@ -29,9 +28,9 @@ jobs:
       - name: Test App
         run: |
           make test-helm
-  test_kustomize:
-    needs: test_helm
-    runs-on: macOS-latest
+  test-kustomize:
+    needs: test-helm
+    runs-on: ubuntu-latest
     strategy:
       max-parallel: 4
       matrix:
@@ -53,9 +52,9 @@ jobs:
         run: |
           make test-kustomize
 
-  test_kubectl:
-    needs: test_kustomize
-    runs-on: macOS-latest
+  test-kubectl:
+    needs: test-kustomize
+    runs-on: ubuntu-latest
     strategy:
       max-parallel: 4
       matrix:
@@ -76,9 +75,9 @@ jobs:
       - name: Test App
         run: |
           make test-kubectl
-  test_helmfile:
-    needs: test_kubectl
-    runs-on: macOS-latest
+  test-helmfile:
+    needs: test-kubectl
+    runs-on: ubuntu-latest
     strategy:
       max-parallel: 4
       matrix:
@@ -99,3 +98,32 @@ jobs:
       - name: Test App
         run: |
           make test-helmfile
+  prepare-release:
+    name: "Starting release"
+    needs: [test-helm, test-kustomize, test-kubectl, test-helmfile]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout current branch
+        uses: actions/checkout@v2
+        with:
+          ref: ${{ github.ref }}
+      - name: Update version
+        run: |
+          git config --local user.name '${{ env.GIT_COMMITER_NAME }}'
+          git config --local user.email '${{ env.GIT_COMMITER_EMAIL }}'
+          git config --local author.name '${{ env.GIT_AUTHOR_NAME }}'
+          git config --local author.name '${{ env.GIT_AUTHOR_EMAIL }}'
+          make update-build-version BUILD_VERSION=$(grep -oP '\d+\.\d+\.\d+.*$' <<< ${{ github.ref }})
+          make update-readme-version BUILD_VERSION=$(grep -oP '\d+\.\d+\.\d+.*$' <<< ${{ github.ref }})
+          make commit-version
+        env:
+          GIT_COMMITER_NAME: "GitHub"
+          GIT_COMMITER_EMAIL: "noreply@github.com"
+          GIT_AUTHOR_NAME: "github-actions[bot]"
+          GIT_AUTHOR_EMAIL: "41898282+github-actions[bot]@users.noreply.github.com"
+      - name: Create pull request to master
+        id: create-pull-request-to-master
+        uses: vsoch/pull-request-action@1.0.5
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PULL_REQUEST_BRANCH: master

@@ -1,11 +1,12 @@
 import os.path
 import os
-from dotenv import load_dotenv
 import sys
 import platform
 import urllib
 import tarfile
 import requests
+import commands as _
+from dotenv import load_dotenv
 from zipfile import ZipFile
 from config import DOWNLOAD_PATH, VERSION_FILE
 from .list import list_remote
@@ -21,8 +22,10 @@ def download_program(args, program, version, fast):
     if not fast:
         available_versions = list_remote(args)
         if version not in available_versions:
-            print("Version '" + version + "' is not right available " + program + " version.\
-                \nYou can check right available versions by running 'kubenvz kubectl/kustomize list remote'.\n")
+            print(f"Version '{version}' is not right available {program} version.\n"
+                  f"You can check right available versions by running 'kubenvz kubectl/kustomize list remote.")
+            if not args.classic_repository:
+                print(f"You can also try using original kubernetes repository with 'kubenvz kubectl --classic'.")
             sys.exit(1)
     else:
         print("Skipping remote check...")
@@ -114,9 +117,13 @@ def install(args):
     version = args.version
     fast = args.f
 
-    if not version and os.path.exists(VERSION_FILE):
-        load_dotenv(dotenv_path=VERSION_FILE)
-        version = (os.getenv(program.upper()))
+    if not version:
+        version_file_path = _.locate_file(VERSION_FILE)
+
+        if version_file_path:
+            print(f"Using version defined in: {version_file_path}")
+            load_dotenv(dotenv_path=version_file_path)
+            version = (os.getenv(program.upper()))
 
     if not version:
         print("Please define version or add that to .kubenvz file.\
@@ -141,16 +148,13 @@ def install(args):
         raise Exception(
             'Invalid Arguement !! It should be either kubectl / kustomize / helm / helmfile')
 
-    if not os.access('/usr/local/bin', os.W_OK):
-        print("Error: User doesn't have write permission of /usr/local/bin directory.\
-            \n\nRun below command to grant permission and rerun 'kubenvz install' command.\
-            \nsudo chown -R $(whoami) /usr/local/bin\n")
-        sys.exit(1)
+    install_path = _.get_install_path()
 
     try:
-        os.remove("/usr/local/bin/" + program)
+        os.remove(install_path + program)
 
     except FileNotFoundError:
         pass
 
-    os.symlink(dest_path, "/usr/local/bin/" + program)
+    os.symlink(dest_path, install_path + program)
+    print('...finished')
