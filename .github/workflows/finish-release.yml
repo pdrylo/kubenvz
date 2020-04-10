@@ -66,7 +66,8 @@ jobs:
         id: extract_upload_url
       - name: Get the version
         id: get_version
-          run: echo ::set-output name=value::$(python kubenvz.py --version)
+        run: |
+          echo "::set-output name=value::$(python kubenvz.py --version)"
       - name: Upload asset
         id: upload-release-asset
         uses: actions/upload-release-asset@v1.0.1
@@ -112,7 +113,8 @@ jobs:
         id: extract_upload_url
       - name: Get the version
         id: get_version
-        run: echo ::set-output name=value::$(python kubenvz.py --version)
+        run: |
+          echo "::set-output name=value::$(python kubenvz.py --version)"
       - name: Upload asset
         id: upload-release-asset
         uses: actions/upload-release-asset@v1.0.1
@@ -144,7 +146,8 @@ jobs:
         id: extract_upload_url
       - name: Get the version
         id: get_version
-          run: echo ::set-output name=value::$(python kubenvz.py --version)
+        run: |
+          echo "::set-output name=value::$(python kubenvz.py --version)"
       - name: Upload asset
         id: upload-release-asset
         uses: actions/upload-release-asset@v1.0.1
