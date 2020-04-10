@@ -1,6 +1,7 @@
 import os
 
 from typing import Union
+from sys import exit
 
 from .list import list_local, list_remote
 from .install import install
