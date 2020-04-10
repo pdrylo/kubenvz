@@ -30,6 +30,7 @@ jobs:
           echo "::set-output name=value::$(python kubenvz.py --version)"
       - name: Tag current version
         run: |
+          git reset --hard HEAD
           git config --local user.name '${{ env.GIT_COMMITER_NAME }}'
           git config --local user.email '${{ env.GIT_COMMITER_EMAIL }}'
           git config --local author.name '${{ env.GIT_AUTHOR_NAME }}'
