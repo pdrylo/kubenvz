@@ -109,7 +109,7 @@ jobs:
           make test-helmfile
   add-feature:
     name: "Starting feature"
-    if: startsWith(github.ref, 'feature/')
+    if: contains(github.ref, 'feature/')
     needs: [test-helm, test-kustomize, test-kubectl, test-helmfile]
     runs-on: ubuntu-latest
     steps:
