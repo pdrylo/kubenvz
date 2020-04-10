@@ -1,4 +1,4 @@
-name: "Finish release"
+name: "Build & Release"
 
 on:
   push:
