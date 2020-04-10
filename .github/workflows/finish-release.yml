@@ -7,9 +7,23 @@ on:
 
 jobs:
   create-release:
-    name: "Create release"
+    name: "Release"
     runs-on: ubuntu-latest
+    strategy:
+      max-parallel: 4
+      matrix:
+        python-version: [3.7]
     steps:
+      - uses: actions/checkout@v1
+      - name: Set up python ${{ matrix.python-version }}
+        uses: actions/setup-python@v1
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
       - name: Create release
         id: create_release
         uses: actions/create-release@v1.0.0
@@ -21,16 +35,22 @@ jobs:
           draft: false
           prerelease: true
 
-      - name: Save upload URL
+      - name: Save outputs
         shell: bash
         run: |
           echo "${{ steps.create_release.outputs.upload_url }}" > upload-url.txt
+          echo "$(python kubenvz.py --version)" > release-version.txt
 
-      - name: Upload
+      - name: Upload URL
         uses: actions/upload-artifact@v1
         with:
           name: uploadurl
           path: upload-url.txt
+      - name: Upload release version
+        uses: actions/upload-artifact@v1
+        with:
+          name: releaseversion
+          path: release-version.txt
 
   build-osx-release:
     needs: create-release
@@ -169,7 +189,7 @@ jobs:
 
   finish-release:
     name: "Finishing release"
-    needs: [build-osx-release, build-linux-release]
+    needs: create-release
     runs-on: ubuntu-latest
     steps:
       - name: Checkout current branch
@@ -183,9 +203,18 @@ jobs:
           target_branch: 'develop'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Download release version
+        uses: actions/download-artifact@v1
+        with:
+          name: releaseversion
+      - name: Extract version
+        shell: bash
+        run: |
+          echo "##[set-output name=release_version;] $(cat releaseversion/release-version.txt)"
+        id: extract_version
       - name: Tag current version
         uses: peterjgrainger/action-create-branch@v2.0.0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          branch: 'tags/v${{ steps.release_bundle.outputs.version }}'
+          branch: 'tags/v${{ steps.extract_version.outputs.release_version }}'
