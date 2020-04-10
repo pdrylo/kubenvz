@@ -24,6 +24,7 @@ jobs:
           pip install -r requirements.txt
       - name: Build App
         run: |
+          mkdir -p ~/.local/bin
           make build
       - name: Test App
         run: |
@@ -47,6 +48,7 @@ jobs:
           pip install -r requirements.txt
       - name: Build App
         run: |
+          mkdir -p ~/.local/bin
           make build
       - name: Test App
         run: |
@@ -71,6 +73,7 @@ jobs:
           pip install -r requirements.txt
       - name: Build App
         run: |
+          mkdir -p ~/.local/bin
           make build
       - name: Test App
         run: |
@@ -94,6 +97,7 @@ jobs:
           pip install -r requirements.txt
       - name: Build App
         run: |
+          mkdir -p ~/.local/bin
           make build
       - name: Test App
         run: |
