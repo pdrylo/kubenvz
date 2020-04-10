@@ -1,6 +1,4 @@
-[![Actions Status](https://github.com/pdrylo/kubenvz/workflows/Test/badge.svg)](https://github.com/pdrylo/kubenvz/actions)
-
-[![Actions Status](https://github.com/pdrylo/kubenvz/workflows/Build%20&%20Release/badge.svg)](https://github.com/pdrylo/kubenvz/actions)
+![Tests](https://github.com/pdrylo/kubenvz/workflows/Tests/badge.svg)
 
 # Kubenvz
 
