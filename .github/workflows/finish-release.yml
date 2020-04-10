@@ -53,7 +53,7 @@ jobs:
           path: release-version.txt
 
   build-osx-release:
-    needs: create-release
+    needs: finish-release
     runs-on: macos-latest
     strategy:
       max-parallel: 4
@@ -100,7 +100,7 @@ jobs:
           asset_content_type: application/octet-stream
 
   build-linux-release:
-    needs: create-release
+    needs: finish-release
     runs-on: ubuntu-latest
     strategy:
       max-parallel: 4
@@ -147,7 +147,7 @@ jobs:
           asset_content_type: application/octet-stream
 
   upload-kbnvz:
-    needs: create-release
+    needs: finish-release
     runs-on: macos-latest
     strategy:
       max-parallel: 4
@@ -210,11 +210,18 @@ jobs:
       - name: Extract version
         shell: bash
         run: |
-          echo "##[set-output name=release_version;] $(cat releaseversion/release-version.txt)"
+          echo "::set-output name=value::$(cat releaseversion/release-version.txt)"
         id: extract_version
       - name: Tag current version
-        uses: peterjgrainger/action-create-branch@v2.0.0
+        run: |
+          git config --local user.name '${{ env.GIT_COMMITER_NAME }}'
+          git config --local user.email '${{ env.GIT_COMMITER_EMAIL }}'
+          git config --local author.name '${{ env.GIT_AUTHOR_NAME }}'
+          git config --local author.name '${{ env.GIT_AUTHOR_EMAIL }}'
+          git tag -a v${{ steps.extract_version.outputs.value }} -m "New release for v${{ steps.extract_version.outputs.value }}"
+          git push --tags
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          branch: 'tags/v${{ steps.extract_version.outputs.release_version }}'
+          GIT_COMMITER_NAME: "GitHub"
+          GIT_COMMITER_EMAIL: "noreply@github.com"
+          GIT_AUTHOR_NAME: "github-actions[bot]"
+          GIT_AUTHOR_EMAIL: "41898282+github-actions[bot]@users.noreply.github.com"
