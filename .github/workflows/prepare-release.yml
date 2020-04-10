@@ -8,6 +8,7 @@ on:
 jobs:
   test-helm:
     name: "Test helm versions installation"
+    if: !contains(github.event.head_commit.message, '[ci skip]')
     runs-on: ubuntu-latest
     strategy:
       max-parallel: 4
@@ -32,6 +33,7 @@ jobs:
           make test-helm
   test-kustomize:
     name: "Test kustomize versions installation"
+    if: !contains(github.event.head_commit.message, '[ci skip]')
     needs: test-helm
     runs-on: ubuntu-latest
     strategy:
@@ -58,6 +60,7 @@ jobs:
 
   test-kubectl:
     name: "Test kubectl versions installation"
+    if: !contains(github.event.head_commit.message, '[ci skip]')
     needs: test-kustomize
     runs-on: ubuntu-latest
     strategy:
@@ -83,6 +86,7 @@ jobs:
           make test-kubectl
   test-helmfile:
     name: "Test helmfile versions installation"
+    if: !contains(github.event.head_commit.message, '[ci skip]')
     needs: test-kubectl
     runs-on: ubuntu-latest
     strategy:
