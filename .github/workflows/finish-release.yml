@@ -34,10 +34,10 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, you do not need to create your own token
         with:
-          tag_name: refs/tags/v${{ steps.release_version.outputs.value }}
-          release_name: Release v${{ steps.release_version.outputs.value }}
+          tag_name: "refs/tags/v${{ steps.release_version.outputs.value }}"
+          release_name: "Release refs/tags/v${{ steps.release_version.outputs.value }}"
           draft: false
-          prerelease: false
+          prerelease: true
 
       - name: Save outputs
         shell: bash
