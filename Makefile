@@ -13,6 +13,7 @@ update-readme-version: check-env
 
 commit-version:
 	git add config.py
+	git add README.md
 	git commit -m "Version update" && git push || true
 
 build:
