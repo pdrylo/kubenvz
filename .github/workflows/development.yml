@@ -8,6 +8,7 @@ on:
 
 jobs:
   test-helm:
+    name: "Test helm versions installation"
     runs-on: ubuntu-latest
     strategy:
       max-parallel: 4
@@ -31,6 +32,7 @@ jobs:
         run: |
           make test-helm
   test-kustomize:
+    name: "Test kustomize versions installation"
     needs: test-helm
     runs-on: ubuntu-latest
     strategy:
@@ -56,6 +58,7 @@ jobs:
           make test-kustomize
 
   test-kubectl:
+    name: "Test kubectl versions installation"
     needs: test-kustomize
     runs-on: ubuntu-latest
     strategy:
@@ -80,6 +83,7 @@ jobs:
         run: |
           make test-kubectl
   test-helmfile:
+    name: "Test helmfile versions installation"
     needs: test-kubectl
     runs-on: ubuntu-latest
     strategy:
@@ -105,6 +109,7 @@ jobs:
           make test-helmfile
   add-feature:
     name: "Starting feature"
+    if: startsWith(github.head_ref, 'feature/')
     needs: [test-helm, test-kustomize, test-kubectl, test-helmfile]
     runs-on: ubuntu-latest
     steps:

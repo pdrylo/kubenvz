@@ -7,6 +7,7 @@ on:
 
 jobs:
   test-helm:
+    name: "Test helm versions installation"
     runs-on: ubuntu-latest
     strategy:
       max-parallel: 4
@@ -22,14 +23,15 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
-      - name: Build App
+      - name: Build
         run: |
           mkdir -p ~/.local/bin
           make build
-      - name: Test App
+      - name: Test
         run: |
           make test-helm
   test-kustomize:
+    name: "Test kustomize versions installation"
     needs: test-helm
     runs-on: ubuntu-latest
     strategy:
@@ -46,15 +48,16 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
-      - name: Build App
+      - name: Build
         run: |
           mkdir -p ~/.local/bin
           make build
-      - name: Test App
+      - name: Test
         run: |
           make test-kustomize
 
   test-kubectl:
+    name: "Test kubectl versions installation"
     needs: test-kustomize
     runs-on: ubuntu-latest
     strategy:
@@ -71,14 +74,15 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
-      - name: Build App
+      - name: Build
         run: |
           mkdir -p ~/.local/bin
           make build
-      - name: Test App
+      - name: Test
         run: |
           make test-kubectl
   test-helmfile:
+    name: "Test helmfile versions installation"
     needs: test-kubectl
     runs-on: ubuntu-latest
     strategy:
@@ -95,11 +99,11 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
-      - name: Build App
+      - name: Build
         run: |
           mkdir -p ~/.local/bin
           make build
-      - name: Test App
+      - name: Test
         run: |
           make test-helmfile
   prepare-release:
