@@ -24,14 +24,18 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
+      - name: Get version
+        id: release_version
+        run: |
+          echo "::set-output name=value::$(python kubenvz.py --version)"
       - name: Create release
         id: create_release
         uses: actions/create-release@v1.0.0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, you do not need to create your own token
         with:
-          tag_name: ${{ github.ref }}
-          release_name: Release ${{ github.ref }}
+          tag_name: v${{ steps.release_version.outputs.value }}
+          release_name: Release v${{ steps.release_version.outputs.value }}
           draft: false
           prerelease: true
 
@@ -39,7 +43,7 @@ jobs:
         shell: bash
         run: |
           echo "${{ steps.create_release.outputs.upload_url }}" > upload-url.txt
-          echo "$(python kubenvz.py --version)" > release-version.txt
+          echo "${{ steps.release_version.outputs.value }}" > release-version.txt
 
       - name: Upload URL
         uses: actions/upload-artifact@v1
