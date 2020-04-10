@@ -25,7 +25,7 @@ build:
 	@chmod +x dist/kubenvz
 
 package:
-	@cd dist && tar -czvf ./kubenvz_$(PLATFORM)_$(BUILD_VERSION).tar.gz kubenvz
+	@cd dist && tar -czvf ./kubenvz_$(PLATFORM).tar.gz kubenvz
 
 test-kustomize:
 	rm -rf ~/.kubenvz/kustomize*

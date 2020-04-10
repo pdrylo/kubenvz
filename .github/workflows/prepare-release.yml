@@ -112,6 +112,7 @@ jobs:
           make test-helmfile
   prepare-release:
     name: "Starting release"
+    if: "always()"
     needs: [test-helm, test-kustomize, test-kubectl, test-helmfile]
     runs-on: ubuntu-latest
     steps:
