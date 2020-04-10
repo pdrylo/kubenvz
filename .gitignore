@@ -7,7 +7,7 @@ __pycache__/
 *.so
 
 # .kubenvz file
-.kubenvz
+.kubenvz-version
 
 # Distribution / packaging
 .Python
@@ -135,6 +135,7 @@ virtualenv/
 *.tar.gz
 
 .idea/
+.vscode/
 
 
 README_full.md
