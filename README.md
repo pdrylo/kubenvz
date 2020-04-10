@@ -1,10 +1,12 @@
-![Tests](https://github.com/pdrylo/kubenvz/workflows/Tests/badge.svg)
+![Tests](https://github.com/pdrylo/kubenvz/workflows/Tests/badge.svg) ![Build & Release](https://github.com/pdrylo/kubenvz/workflows/Build%20&%20Release/badge.svg)
 
 # Kubenvz
 
 kubectl & kustomize & helm & helmfile version manager
 
 Inspired by terraenv https://github.com/aaratn/terraenv
+
+Forked from https://github.com/nutellinoit/kubenvz
 
 ## Installation
 
@@ -13,7 +15,7 @@ Inspired by terraenv https://github.com/aaratn/terraenv
 Install via Homebrew on OSx
 
 ```console
-$ brew tap nutellinoit/kubenvz
+$ brew tap pdrylo/kubenvz
 $ brew install kubenvz
 ```
 ### Upgrade
@@ -29,7 +31,7 @@ $ brew upgrade kubenvz
 Download and install with:
 
 ```bash
-wget https://github.com/pdrylo/kubenvz/releases/download/v0.3.0/kubenvz_linux_x86_64_v0.3.0.tar.gz -O kubenvz.tar.gz
+wget https://github.com/pdrylo/kubenvz/releases/download/v0.4.1/kubenvz_linux_x86_64_v0.4.1.tar.gz -O kubenvz.tar.gz
 tar -zxvf kubenvz.tar.gz
 sudo mv kubenvz /usr/local/bin/
 ```
@@ -74,7 +76,7 @@ kubenvz kustomize use 1.0.10
 To have a faster switch between version, install the kbnvz tool (working on macos and linux):
 
 ```bash
-sudo wget https://github.com/pdrylo/kubenvz/releases/download/v0.3.0/kbnvz_v0.3.0 -O /usr/local/bin/kbnvz
+sudo wget https://github.com/pdrylo/kubenvz/releases/download/v0.4.1/kbnvz_v0.4.1 -O /usr/local/bin/kbnvz
 sudo chmod +x /usr/local/bin/kbnvz
 ```
 
