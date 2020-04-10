@@ -1,10 +1,12 @@
-![Tests](https://github.com/pdrylo/kubenvz/workflows/Tests/badge.svg)
+![Tests](https://github.com/pdrylo/kubenvz/workflows/Tests/badge.svg) ![Build & Release](https://github.com/pdrylo/kubenvz/workflows/Build%20&%20Release/badge.svg)
 
 # Kubenvz
 
 kubectl & kustomize & helm & helmfile version manager
 
 Inspired by terraenv https://github.com/aaratn/terraenv
+
+Forked from https://github.com/nutellinoit/kubenvz
 
 ## Installation
 
@@ -13,7 +15,7 @@ Inspired by terraenv https://github.com/aaratn/terraenv
 Install via Homebrew on OSx
 
 ```console
-$ brew tap nutellinoit/kubenvz
+$ brew tap pdrylo/kubenvz
 $ brew install kubenvz
 ```
 ### Upgrade
