@@ -28,6 +28,19 @@ jobs:
         id: release_version
         run: |
           echo "::set-output name=value::$(python kubenvz.py --version)"
+      - name: Tag current version
+        run: |
+          git config --local user.name '${{ env.GIT_COMMITER_NAME }}'
+          git config --local user.email '${{ env.GIT_COMMITER_EMAIL }}'
+          git config --local author.name '${{ env.GIT_AUTHOR_NAME }}'
+          git config --local author.name '${{ env.GIT_AUTHOR_EMAIL }}'
+          git tag -a v${{ steps.release_version.outputs.value }} -m "New release for v${{ steps.release_version.outputs.value }}"
+          git push --tags -f
+        env:
+          GIT_COMMITER_NAME: "GitHub"
+          GIT_COMMITER_EMAIL: "noreply@github.com"
+          GIT_AUTHOR_NAME: "github-actions[bot]"
+          GIT_AUTHOR_EMAIL: "41898282+github-actions[bot]@users.noreply.github.com"
       - name: Create release
         id: create_release
         uses: actions/create-release@v1.0.0
@@ -43,18 +56,12 @@ jobs:
         shell: bash
         run: |
           echo "${{ steps.create_release.outputs.upload_url }}" > upload-url.txt
-          echo "${{ steps.release_version.outputs.value }}" > release-version.txt
 
       - name: Upload URL
         uses: actions/upload-artifact@v1
         with:
           name: uploadurl
           path: upload-url.txt
-      - name: Upload release version
-        uses: actions/upload-artifact@v1
-        with:
-          name: releaseversion
-          path: release-version.txt
 
   build-osx-release:
     needs: finish-release
@@ -207,25 +214,3 @@ jobs:
           target_branch: 'develop'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - name: Download release version
-        uses: actions/download-artifact@v1
-        with:
-          name: releaseversion
-      - name: Extract version
-        shell: bash
-        run: |
-          echo "::set-output name=value::$(cat releaseversion/release-version.txt)"
-        id: extract_version
-      - name: Tag current version
-        run: |
-          git config --local user.name '${{ env.GIT_COMMITER_NAME }}'
-          git config --local user.email '${{ env.GIT_COMMITER_EMAIL }}'
-          git config --local author.name '${{ env.GIT_AUTHOR_NAME }}'
-          git config --local author.name '${{ env.GIT_AUTHOR_EMAIL }}'
-          git tag -a v${{ steps.extract_version.outputs.value }} -m "New release for v${{ steps.extract_version.outputs.value }}"
-          git push --tags -f
-        env:
-          GIT_COMMITER_NAME: "GitHub"
-          GIT_COMMITER_EMAIL: "noreply@github.com"
-          GIT_AUTHOR_NAME: "github-actions[bot]"
-          GIT_AUTHOR_EMAIL: "41898282+github-actions[bot]@users.noreply.github.com"
