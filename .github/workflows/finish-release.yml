@@ -210,11 +210,11 @@ jobs:
       - name: Extract version
         shell: bash
         run: |
-          echo "##[set-output name=release_version;] $(cat releaseversion/release-version.txt)"
+          echo "::set-output name=value::$(cat releaseversion/release-version.txt)"
         id: extract_version
       - name: Tag current version
         uses: peterjgrainger/action-create-branch@v2.0.0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          branch: 'tags/v${{ steps.extract_version.outputs.release_version }}'
+          branch: 'tags/v${{ steps.extract_version.outputs.value }}'
