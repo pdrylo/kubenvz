@@ -28,20 +28,13 @@ jobs:
         id: release_version
         run: |
           echo "::set-output name=value::$(python kubenvz.py --version)"
+
       - name: Tag current version
-        run: |
-          git reset --hard HEAD
-          git config --local user.name '${{ env.GIT_COMMITER_NAME }}'
-          git config --local user.email '${{ env.GIT_COMMITER_EMAIL }}'
-          git config --local author.name '${{ env.GIT_AUTHOR_NAME }}'
-          git config --local author.name '${{ env.GIT_AUTHOR_EMAIL }}'
-          git tag -a v${{ steps.release_version.outputs.value }} -m "New release for v${{ steps.release_version.outputs.value }}"
-          git push --tags
-        env:
-          GIT_COMMITER_NAME: "GitHub"
-          GIT_COMMITER_EMAIL: "noreply@github.com"
-          GIT_AUTHOR_NAME: "github-actions[bot]"
-          GIT_AUTHOR_EMAIL: "41898282+github-actions[bot]@users.noreply.github.com"
+        uses: tvdias/github-tagger@v0.0.1
+        with:
+          repo-token: "${{ secrets.GITHUB_TOKEN }}"
+          tag: "v${{ steps.release_version.outputs.value }}"
+
       - name: Create release
         id: create_release
         uses: actions/create-release@v1.0.0
