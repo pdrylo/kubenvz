@@ -42,8 +42,8 @@ def list_remote(args):
 
         for version in parsed_json:
             try:
-                if not version['name'].startswith('v0') and "rc" not in version['name'] and "beta" not in version[
-                    'name'] and "alpha" not in version['name']:
+                if not version['name'].startswith('v0') and "rc" not in version['name'] \
+                        and "beta" not in version['name'] and "alpha" not in version['name']:
                     available_versions.append(version['name'].lstrip('kubernetes-').lstrip('v'))
             except IndexError:
                 raise Exception("Github rate limiting!!")
@@ -66,10 +66,11 @@ def list_remote(args):
 
         for version in parsed_json:
             try:
-                if "v3.3.0" not in version['name'] and "v3.3.1" not in version['name'] and "v1.0.0" not in version[
-                    'name'] and "kyaml" not in version['name'] and "pseudo" not in version['name'] and "api" not in \
-                        version['name'] and "latest_kustomize" not in version['name'] and "pluginator" not in \
-                        version['name'] and "cmd" not in version['name'] and "kstatus" not in version['name']:
+                if "v3.3.0" not in version['name'] and "v3.3.1" not in version['name'] \
+                        and "v1.0.0" not in version['name'] and "kyaml" not in version['name'] \
+                        and "pseudo" not in version['name'] and "api" not in version['name'] \
+                        and "latest_kustomize" not in version['name'] and "pluginator" not in version['name'] \
+                        and "cmd" not in version['name'] and "kstatus" not in version['name']:
                     available_versions.append(version['name'])
             except IndexError:
                 raise Exception("Github rate limiting!!")
@@ -115,7 +116,8 @@ def list_remote(args):
 
         for version in parsed_json:
             try:
-                if "0.89.1" not in version['name'] and "0.81.2" not in version['name'] and "rc" not in version['name'] and "beta" not in version['name'] and "alpha" not in version['name']:
+                if "0.89.1" not in version['name'] and "0.81.2" not in version['name'] and "rc" not in version['name'] \
+                        and "beta" not in version['name'] and "alpha" not in version['name']:
                     available_versions.append(version['name'])
             except IndexError:
                 raise Exception("Github rate limiting!!")
