@@ -63,8 +63,9 @@ helm = programs.add_parser('helm')
 helmfile = programs.add_parser('helmfile')
 
 # Parser specific arguments
-kubectl.add_argument('-C', '--classic', action='store_true', dest='classic_repository',
-                     help='Use classic kubernetes repository instead of kubectl one')
+kubectl.add_argument('-M', '--main', action='store_true', dest='main_repository',
+                     help=f"Use main kubectl repository instead of kubernetes one\n"
+                          f'Warning: some versions may be missing')
 
 add_commands_params(kubectl)
 add_commands_params(kustomize)

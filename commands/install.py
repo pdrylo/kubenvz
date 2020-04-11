@@ -24,8 +24,8 @@ def download_program(args, program, version, fast):
         if version not in available_versions:
             print(f"Version '{version}' is not right available {program} version.\n"
                   f"You can check right available versions by running 'kubenvz kubectl/kustomize list remote.")
-            if not args.classic_repository:
-                print(f"You can also try using original kubernetes repository with 'kubenvz kubectl --classic'.")
+            if not args.main_repository:
+                print(f"You can also try using main kubectl repository with 'kubenvz kubectl --main'.")
             sys.exit(1)
     else:
         print("Skipping remote check...")

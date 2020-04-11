@@ -32,7 +32,7 @@ def list_remote(args):
     """ lists kubectl/kustomize/helm/helmfile versions """
 
     if program == "kubectl":
-        repository = "kubernetes" if args.classic_repository else "kubectl"
+        repository = "kubectl" if args.main_repository else "kubernetes"
         session = HTMLSession()
         kustomize_url = session.get(
             f"https://api.github.com/repos/kubernetes/{repository}/tags?per_page=1000")
