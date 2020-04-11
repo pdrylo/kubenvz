@@ -8,6 +8,23 @@ Inspired by terraenv https://github.com/aaratn/terraenv
 
 Forked from https://github.com/nutellinoit/kubenvz
 
+The main difference is source repository of `kubectl` versions. Originally **kubernetes/kubectl** has been used, 
+but it's missing some older versions like 1.14 and 1.15 which are still used in AWS EKS.
+Therefore, it's been changed to **kubernetes/kubernetes**, but can be switched to **kubernetes/kubectl** by specifying
+`-M` or `--main` flag during execution of `list` and `install` sub-commands.
+
+During installation `kubenvz` searches for `~/bin`, `~/.bin` and `~/.local/bin` directories before trying `/usr/local/bin`. It's easier to
+handle switching to different versions if you don't have to rely on root privileges - though it's still available if someone needs it for whatever reason. 
+
+Additionally, **.kubenvz-version** is now used as a version file for `kubenvz` binary, and it's searched for in
+the directory tree path where **kubenvz** is executed. So, you can, for example, create default **~/.kubenvz-version**
+file, which will configure your default versions of kubectl, kustomize, helm and helmfile, and in your project directory
+declare some different versions and switch to them during your work.
+
+The main reason for going with **.kubenvz-version** naming is name clashing with default **~/.kubenvz** directory where all 
+commands are downloading during installation. I'm also a fan of **tfenv** which uses similar version file naming convention. 
+
+
 ## Installation
 
 ### Automatic
