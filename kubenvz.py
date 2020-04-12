@@ -2,7 +2,7 @@
 import argparse
 from commands import list_local, list_remote, install, use, uninstall
 from sys import exit
-from config import VERSION
+from config import VERSION, VERSION_FILE
 
 
 def print_version():
@@ -27,7 +27,8 @@ def add_commands_params(argument_parser):
 
     # Install
     install_cmd_parser = commands.add_parser('install',
-                                             help='Install specific version or version defined in .kubenvz-version file')
+                                             help=f'Install specific version or version defined '
+                                                  f'in {VERSION_FILE} file')
 
     install_cmd_parser.add_argument('version', type=str, help='Version to install', nargs="?", default="")
     install_cmd_parser.add_argument('-f', action='store_true')
@@ -39,7 +40,8 @@ def add_commands_params(argument_parser):
     uninstall_cmd_parser.set_defaults(func=uninstall)
 
     # Use
-    use_cmd_parser = commands.add_parser('use', help='Use program version')
+    use_cmd_parser = commands.add_parser('use', help=f'Switch to specific version or version defined '
+                                                     f'in {VERSION_FILE} file')
     use_cmd_parser.add_argument('version', type=str, help='Version to use', nargs="?", default="")
     use_cmd_parser.set_defaults(func=use)
 
@@ -50,7 +52,7 @@ class Parser(argparse.ArgumentParser):
         exit(1)
 
 
-parser = Parser(description='Manage kubectl, kustomize and helm versions v0.4.0')
+parser = Parser(description=f'Manage kubectl, kustomize and helm versions v{VERSION}')
 parser.add_argument('-V', '--version', action='store_true', dest='print_version')
 
 # Create subparsers for kubectl, kustomize, helm i helmfile commands
@@ -63,8 +65,9 @@ helm = programs.add_parser('helm')
 helmfile = programs.add_parser('helmfile')
 
 # Parser specific arguments
-kubectl.add_argument('-C', '--classic', action='store_true', dest='classic_repository',
-                     help='Use classic kubernetes repository instead of kubectl one')
+kubectl.add_argument('-M', '--main', action='store_true', dest='main_repository',
+                     help=f"Use main kubectl repository instead of kubernetes one\n"
+                          f'Warning: some versions may be missing')
 
 add_commands_params(kubectl)
 add_commands_params(kustomize)
